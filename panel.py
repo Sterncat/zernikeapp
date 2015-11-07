@@ -15,18 +15,17 @@ import sys
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLineEdit, QLabel, QHBoxLayout,
     QVBoxLayout, QPushButton, QApplication)
 from PyQt5.QtGui import QPixmap
-
+from PyQt5 import QtCore
+import opticspy
 
 class Example(QWidget):
     
     def __init__(self):
         super(Example, self).__init__()
-        
         self.initUI()
         
         
     def initUI(self):
-
 #-------------------------------------------------------------------------------  
 #Title
 #------------------------------------------------------------------------------- 
@@ -42,9 +41,9 @@ class Example(QWidget):
 #-------------------------------------------------------------------------------    
         grid = QGridLayout()
  
-        qlevalue_list = []
+        self.qlevalue_list = []
         for i in range(40):
-            qlevalue_list.append(QLineEdit())
+            self.qlevalue_list.append(QLineEdit())
 
         names = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'Z10',
                 'Z11', 'Z12', 'Z13', 'Z14', 'Z15', 'Z16', 'Z17', 'Z18', 'Z19', 'Z20',
@@ -55,13 +54,14 @@ class Example(QWidget):
         m = 0
         
         for position in positions:
-            print position
             if position[1]%2 == 1:
-                qlevalue_list[n].setMaximumWidth(30)
-                qlevalue_list[n].setText('0')
-                grid.addWidget(qlevalue_list[n], *position)
+                self.qlevalue_list[n].setMaximumWidth(40)
+                if names[n] == ' R':
+                    self.qlevalue_list[n].setText('1')
+                else:
+                    self.qlevalue_list[n].setText('0')
+                grid.addWidget(self.qlevalue_list[n], *position)
                 n = n + 1
-                print n
             else:
                 if names[m] == ' ':
                     break
@@ -69,13 +69,12 @@ class Example(QWidget):
                 lbl_z.setMaximumWidth(30)
                 grid.addWidget(lbl_z, *position)
                 m = m + 1
-                print m
 
 #-------------------------------------------------------------------------------  
 #Several Buttons
 #Zernikesurface, Zernikemap, ZernikeMTF, ZernikePSF, Twyman Green Interferogram
 #------------------------------------------------------------------------------- 
-        surfacebutton = QPushButton("Plot 3D")
+        surfacebutton = QPushButton("Plot 3D", self)
         mapbutton = QPushButton("Plot 2D")
         mtfbutton = QPushButton("MTF")
         psfbutton = QPushButton("PSF")
@@ -90,42 +89,138 @@ class Example(QWidget):
         hbox2.addWidget(psfbutton)
         hbox2.addWidget(tgbutton)
         hbox2.addStretch(1)
+
+
+
 #-------------------------------------------------------------------------------  
 #Two picture layout
 #one for 3D and 2D plot, one for MTF, PSF, Interferogram
 #------------------------------------------------------------------------------- 
 
-        pixmap1 = QPixmap("Default1.png")
-        lbl_pixmap1 = QLabel(self)
-        lbl_pixmap1.setPixmap(pixmap1)
+        self.pixmap1 = QPixmap("surface.png")
+        self.pixmap1 = self.pixmap1.scaled(524,396)
+        self.lbl_pixmap1 = QLabel(self)
+        self.lbl_pixmap1.setPixmap(self.pixmap1)
+        self.lbl_pixmap1.setStyleSheet('border: 2px solid black; border-radius: 5px;') 
 
-        pixmap2 = QPixmap("Default2.png")
-        lbl_pixmap2 = QLabel(self)
-        lbl_pixmap2.setPixmap(pixmap2)
+        self.pixmap2 = QPixmap("psf.png")
+        self.pixmap2 = self.pixmap2.scaled(524,396)
+        self.lbl_pixmap2 = QLabel(self)
+        self.lbl_pixmap2.setPixmap(self.pixmap2)
+        self.lbl_pixmap2.setStyleSheet('border: 2px solid black; border-radius: 5px;') 
 
         hbox3 = QHBoxLayout()
-        hbox3.addWidget(lbl_pixmap1)
-        hbox3.addWidget(lbl_pixmap2)
-
-#------------------------------------------------------------------------------- 
-
-
+        hbox3.addWidget(self.lbl_pixmap1)
+        hbox3.addWidget(self.lbl_pixmap2)
+#-------------------------------------------------------------------------------
+# Set all horizontal box to vertical box 
+#-------------------------------------------------------------------------------
         vbox = QVBoxLayout()
-        
         vbox.addLayout(hbox1)
         vbox.addLayout(grid)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
         vbox.addStretch(1)
         self.setLayout(vbox)  
-
         self.move(150, 50)
         self.setWindowTitle('Zernike Polynomials')
         self.show()
-        
-        
+
+#-------------------------------------------------------------------------------
+# Button action
+#-------------------------------------------------------------------------------  
+        surfacebutton.clicked.connect(self.plotsurface)
+        mapbutton.clicked.connect(self.plotmap)
+        mtfbutton.clicked.connect(self.plotmtf)
+        psfbutton.clicked.connect(self.plotpsf)
+
+
+
+    @QtCore.pyqtSlot()
+    def getzernikevalue(self):
+
+        zvalue = []
+        for i in range(37):        
+            tmp = self.qlevalue_list[i].text()
+            zvalue.append(float(tmp))
+        r = float(self.qlevalue_list[37].text())
+        print zvalue, len(zvalue), r
+        print "zernikevalue"
+        return [zvalue,r]
+
+    @QtCore.pyqtSlot()
+    def plotsurface(self):
+        [zvalue,r] =self.getzernikevalue()
+        picname = "surface.png"
+        Z = opticspy.zernike.Coefficient(zvalue)
+        fig = Z.zernikesurface(savefig = True)
+        fig.savefig(picname, dpi=60, bbox_inches='tight')
+        newsurface = QPixmap(picname)
+        newsurface = newsurface.scaled(524,396)
+        self.lbl_pixmap1.setPixmap(newsurface)
+        print "Plot Surface"
+
+
+    @QtCore.pyqtSlot()
+    def plotmap(self):
+        [zvalue,r] =self.getzernikevalue()
+        picname = "map.png"
+        Z = opticspy.zernike.Coefficient(zvalue)
+        fig = Z.zernikemap(savefig = True)
+        fig.savefig(picname, dpi=60, bbox_inches='tight')
+        newmap = QPixmap(picname)
+        newmap = newmap.scaled(524,396)
+        self.lbl_pixmap1.setPixmap(newmap)
+        print "Plot Map"
+
+    @QtCore.pyqtSlot()
+    def plotmtf(self):
+        [zvalue,r] =self.getzernikevalue()
+        picname = "mtf.png"
+        Z = opticspy.zernike.Coefficient(zvalue)
+        fig = Z.mtf(r=r)
+        fig.savefig(picname, dpi=60, bbox_inches='tight')
+        newmap = QPixmap(picname)
+        newmap = newmap.scaled(524,396)
+        self.lbl_pixmap2.setPixmap(newmap)
+        print "Plot MTF"
+
+
+
+    @QtCore.pyqtSlot()
+    def plotpsf(self):
+        [zvalue,r] =self.getzernikevalue()
+        picname = "psf.png"
+        Z = opticspy.zernike.Coefficient(zvalue)
+        fig = Z.psf(r=r)
+        fig.savefig(picname, dpi=60, bbox_inches='tight')
+        newmap = QPixmap(picname)
+        newmap = newmap.scaled(524,396)
+        self.lbl_pixmap2.setPixmap(newmap)
+        print "Plot PSF"
+
+    @QtCore.pyqtSlot()
+    def plotpsf(self):
+        [zvalue,r] =self.getzernikevalue()
+        picname = "interferogram.png"
+        Z = opticspy.zernike.Coefficient(zvalue)
+        fig = Z.twyman_green(r=r)
+        fig.savefig(picname, dpi=60, bbox_inches='tight')
+        newmap = QPixmap(picname)
+        newmap = newmap.scaled(524,396)
+        self.lbl_pixmap2.setPixmap(newmap)
+        print "Plot Twyman Green Interferogram"
+
+
+
+
+        	
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
+
+
+
+
