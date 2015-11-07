@@ -38,18 +38,13 @@ def twyman_green(coefficients, lambda_1 = 632, PR = 1):
 	Ixy = I1 + I2 + 2 * __np__.sqrt(I1*I2) * __np__.cos(ph)
 	__tools__.makecircle(Ixy, r, PR)
 #======================================================
-	fig = __plt__.figure(figsize=(12, 9), dpi=60)
+	fig = __plt__.figure(figsize=(11, 9), dpi=60)
 	__plt__.imshow(-Ixy, extent=[-PR,PR,-PR,PR])
+	ax = fig.gca()
+	ax.set_aspect('equal', 'datalim')
 	__plt__.set_cmap('Greys')
-
-	label = 'Zernike Coefficients:'
-	m = 1
-	for i in coefficients:
-		if i!=0:
-			label = label + "Z" + str(m) + "=" + str(i) +" "
-		m = m + 1	
-	__plt__.xlabel(label,fontsize=16)
-	__plt__.title('Twyman Green Interferogram',fontsize=16)
+	__plt__.title('Twyman Green Interferogram',fontsize=18)
+	__plt__.colorbar()
 	fig.set_tight_layout(True)
 	return fig
 

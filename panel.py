@@ -48,7 +48,7 @@ class Example(QWidget):
         names = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6', 'Z7', 'Z8', 'Z9', 'Z10',
                 'Z11', 'Z12', 'Z13', 'Z14', 'Z15', 'Z16', 'Z17', 'Z18', 'Z19', 'Z20',
                 'Z21', 'Z22', 'Z23', 'Z24', 'Z25', 'Z26', 'Z27', 'Z28', 'Z29', 'Z30',
-                'Z31', 'Z32', 'Z33', 'Z34', 'Z35', 'Z36', 'Z37', ' R', ' ', ' ']
+                'Z31', 'Z32', 'Z33', 'Z34', 'Z35', 'Z36', 'Z37', ' R', 'z', ' ']
         positions = [(i,j) for i in range(4) for j in range(20)]
         n = 0
         m = 0
@@ -58,6 +58,8 @@ class Example(QWidget):
                 self.qlevalue_list[n].setMaximumWidth(40)
                 if names[n] == ' R':
                     self.qlevalue_list[n].setText('1')
+                elif names[n] == 'z':
+                    self.qlevalue_list[n].setText('0.1')
                 else:
                     self.qlevalue_list[n].setText('0')
                 grid.addWidget(self.qlevalue_list[n], *position)
@@ -133,7 +135,7 @@ class Example(QWidget):
         mapbutton.clicked.connect(self.plotmap)
         mtfbutton.clicked.connect(self.plotmtf)
         psfbutton.clicked.connect(self.plotpsf)
-
+        tgbutton.clicked.connect(self.plottg)
 
 
     @QtCore.pyqtSlot()
@@ -144,13 +146,14 @@ class Example(QWidget):
             tmp = self.qlevalue_list[i].text()
             zvalue.append(float(tmp))
         r = float(self.qlevalue_list[37].text())
+        z = float(self.qlevalue_list[38].text())
         print zvalue, len(zvalue), r
         print "zernikevalue"
-        return [zvalue,r]
+        return [zvalue,r,z]
 
     @QtCore.pyqtSlot()
     def plotsurface(self):
-        [zvalue,r] =self.getzernikevalue()
+        [zvalue,r,z] =self.getzernikevalue()
         picname = "surface.png"
         Z = opticspy.zernike.Coefficient(zvalue)
         fig = Z.zernikesurface(savefig = True)
@@ -163,7 +166,7 @@ class Example(QWidget):
 
     @QtCore.pyqtSlot()
     def plotmap(self):
-        [zvalue,r] =self.getzernikevalue()
+        [zvalue,r,z] =self.getzernikevalue()
         picname = "map.png"
         Z = opticspy.zernike.Coefficient(zvalue)
         fig = Z.zernikemap(savefig = True)
@@ -175,10 +178,10 @@ class Example(QWidget):
 
     @QtCore.pyqtSlot()
     def plotmtf(self):
-        [zvalue,r] =self.getzernikevalue()
+        [zvalue,r,z] =self.getzernikevalue()
         picname = "mtf.png"
         Z = opticspy.zernike.Coefficient(zvalue)
-        fig = Z.mtf(r=r)
+        fig = Z.mtf(r=r, z=z)
         fig.savefig(picname, dpi=60, bbox_inches='tight')
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
@@ -189,10 +192,10 @@ class Example(QWidget):
 
     @QtCore.pyqtSlot()
     def plotpsf(self):
-        [zvalue,r] =self.getzernikevalue()
+        [zvalue,r,z] =self.getzernikevalue()
         picname = "psf.png"
         Z = opticspy.zernike.Coefficient(zvalue)
-        fig = Z.psf(r=r)
+        fig = Z.psf(r=r, z=z)
         fig.savefig(picname, dpi=60, bbox_inches='tight')
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
@@ -200,11 +203,11 @@ class Example(QWidget):
         print "Plot PSF"
 
     @QtCore.pyqtSlot()
-    def plotpsf(self):
-        [zvalue,r] =self.getzernikevalue()
+    def plottg(self):
+        [zvalue,r,z] =self.getzernikevalue()
         picname = "interferogram.png"
         Z = opticspy.zernike.Coefficient(zvalue)
-        fig = Z.twyman_green(r=r)
+        fig = Z.twyman_green()
         fig.savefig(picname, dpi=60, bbox_inches='tight')
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
