@@ -11,4 +11,4 @@
 $ python2.7 panel.py
 ```
 ####The application panel look like this
-![Alt Text](panelpic.png =600x400)
+![Alt Text](http://sterncat.github.io/images/panelpic.png =600x400)
