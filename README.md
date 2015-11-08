@@ -12,4 +12,4 @@ $ python2.7 panel.py
 ```
 ####The application panel look like this
 
-![Panel pic](http://sterncat.github.io/images/panelpic.png =600x400)
+<p><img src="http://sterncat.github.io/images/panelpic.png" height="400" width="600" /></p>
