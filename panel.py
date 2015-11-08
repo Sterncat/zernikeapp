@@ -115,6 +115,33 @@ class Example(QWidget):
         hbox3.addWidget(self.lbl_pixmap1)
         hbox3.addWidget(self.lbl_pixmap2)
 #-------------------------------------------------------------------------------
+# Author and link at the bottom
+#-------------------------------------------------------------------------------
+        lbl_bottom1 = QLabel('Author: Xing Fan')
+        lbl_bottom1.setStyleSheet("QLabel { font-size: 15px }")
+
+        lbl_bottom2 = QLabel('This app based on python optical module:')
+        lbl_bottom2.setStyleSheet("QLabel { font-size: 15px }")
+
+        lbl_bottom3 = QLabel()
+        lbl_bottom3.setText('''<a href='https://github.com/Sterncat/opticspy'>opticspy</a>''')
+        lbl_bottom3.setOpenExternalLinks(True)
+        lbl_bottom3.setStyleSheet("QLabel { font-size: 15px }")
+
+        lbl_bottom4 = QLabel()
+        lbl_bottom4.setText('''<a href='https://github.com/Sterncat/zernikeapp'>How to use and reference</a>''')
+        lbl_bottom4.setOpenExternalLinks(True)
+        lbl_bottom4.setStyleSheet("QLabel { font-size: 15px }")
+
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(lbl_bottom1)
+        hbox4.addStretch(1)
+        hbox4.addWidget(lbl_bottom2)
+        hbox4.addWidget(lbl_bottom3)
+        hbox4.addStretch(1)
+        hbox4.addWidget(lbl_bottom4)
+
+#-------------------------------------------------------------------------------
 # Set all horizontal box to vertical box 
 #-------------------------------------------------------------------------------
         vbox = QVBoxLayout()
@@ -122,6 +149,7 @@ class Example(QWidget):
         vbox.addLayout(grid)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
+        vbox.addLayout(hbox4)
         vbox.addStretch(1)
         self.setLayout(vbox)  
         self.move(150, 50)
@@ -147,8 +175,6 @@ class Example(QWidget):
             zvalue.append(float(tmp))
         r = float(self.qlevalue_list[37].text())
         z = float(self.qlevalue_list[38].text())
-        print zvalue, len(zvalue), r
-        print "zernikevalue"
         return [zvalue,r,z]
 
     @QtCore.pyqtSlot()
@@ -161,7 +187,6 @@ class Example(QWidget):
         newsurface = QPixmap(picname)
         newsurface = newsurface.scaled(524,396)
         self.lbl_pixmap1.setPixmap(newsurface)
-        print "Plot Surface"
 
 
     @QtCore.pyqtSlot()
@@ -174,7 +199,6 @@ class Example(QWidget):
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
         self.lbl_pixmap1.setPixmap(newmap)
-        print "Plot Map"
 
     @QtCore.pyqtSlot()
     def plotmtf(self):
@@ -186,8 +210,6 @@ class Example(QWidget):
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
         self.lbl_pixmap2.setPixmap(newmap)
-        print "Plot MTF"
-
 
 
     @QtCore.pyqtSlot()
@@ -200,7 +222,6 @@ class Example(QWidget):
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
         self.lbl_pixmap2.setPixmap(newmap)
-        print "Plot PSF"
 
     @QtCore.pyqtSlot()
     def plottg(self):
@@ -212,10 +233,6 @@ class Example(QWidget):
         newmap = QPixmap(picname)
         newmap = newmap.scaled(524,396)
         self.lbl_pixmap2.setPixmap(newmap)
-        print "Plot Twyman Green Interferogram"
-
-
-
 
         	
 if __name__ == '__main__':

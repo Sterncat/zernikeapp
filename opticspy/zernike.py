@@ -89,7 +89,6 @@ class Coefficient(object):
 		label2 = ""
 		for i in self.__coefficients__:
 			if i != 0:
-				print 'Z'+str(m+1)+' = ',i,self.__zernikelist__[m]
 				label1 = label1 + 'Z'+str(m+1)+' = '+str(i)+"\n"
 				label2 = label2 + 'Z'+str(m+1)+' = '+str(i)+"  "
 			m = m + 1
@@ -106,7 +105,6 @@ class Coefficient(object):
 		"""
 		m = 1
 		for i in self.__zernikelist__:
-			print "Z"+str(m)+":"+i
 			m = m + 1
 
 	def zernikesurface(self, label = True, zlim=[], savefig = True):
@@ -266,7 +264,6 @@ class Coefficient(object):
 		z: exit pupil to image plane distance(m)
 
 		"""
-		print r,lambda_1,z
 		PSF = self.__psfcaculator__(r=r,lambda_1=lambda_1,z=z)
 		fig = __plt__.figure(figsize=(12, 8), dpi=60)
 		__plt__.imshow(abs(PSF),cmap=__cm__.RdYlGn)
